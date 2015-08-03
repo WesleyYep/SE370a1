@@ -36,6 +36,7 @@ class Process(threading.Thread):
         # the state can be used to determine which list - runnable or waiting the process
         # appears in.
         # ...
+        self.state = State.runnable
 
     def run(self):
         """Start the process running."""
@@ -50,12 +51,12 @@ class Process(threading.Thread):
         # Something like the following but you will have to think about
         # pausing and resuming the process.
 
-        # loops = self.ask_user()
-        # while loops > 0:
-        #     for i in range(loops):
-        #         self.main_process_body()
-        #     self.iosys.write(self, "\n")
-        #     loops = self.ask_user()
+        loops = self.ask_user()
+        while loops > 0:
+            for i in range(loops):
+                self.main_process_body()
+            self.iosys.write(self, "\n")
+            loops = self.ask_user()
 
     def run_background(self):
         """Run as a background process."""
@@ -76,8 +77,8 @@ class Process(threading.Thread):
         # pausing and resuming the process.
 
         # check to see if supposed to terminate
-        # if self.state == State.killed:
-        #     _thread.exit()
-        # self.iosys.write(self, "*")
+        if self.state == State.killed:
+            _thread.exit()
+        self.iosys.write(self, "*")
         sleep(0.1)
 

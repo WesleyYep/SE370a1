@@ -99,7 +99,9 @@ class IO_Sys():
         # change the state of the process to waiting
         self.the_dispatcher.proc_waiting(process)
         # ...
-        return # return the data here
+        window = process.panel.window()
+        number = int(window.getstr())
+        return number # return the data here
 
 # =======================================================================================================================
 

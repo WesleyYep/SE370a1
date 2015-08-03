@@ -15,6 +15,7 @@ class Dispatcher():
     def __init__(self):
         """Construct the dispatcher."""
         # ...
+        self.processList = []
 
     def set_io_sys(self, io_sys):
         """Set the io subsystem."""
@@ -23,6 +24,10 @@ class Dispatcher():
     def add_process(self, process):
         """Add and start the process."""
         # ...
+        self.io_sys.allocate_window_to_process(process, 0)
+        self.processList.append(process)
+        process.run()
+
 
     def dispatch_next_process(self):
         """Dispatch the process at the top of the stack."""
