@@ -57,8 +57,9 @@ class Dispatcher():
         Only called from running processes.
         """
         # ...
-        self.processList.remove(process)
-        self.dispatch_next_process();
+        self.processList.pop()
+        self.io_sys.remove_window_from_process(process)
+        #self.dispatch_next_process();
 
     def proc_waiting(self, process):
         """Receive notification that process is waiting for input."""

@@ -63,6 +63,8 @@ class Process(threading.Thread):
         """Run as a background process."""
         loops = randint(10, 160)
         for i in range(loops):
+            while self.dispatcher.processList[-1] != self:
+                self#do nothing            
             self.main_process_body()
 
     def ask_user(self):
@@ -82,4 +84,5 @@ class Process(threading.Thread):
             _thread.exit()
         self.iosys.write(self, "*")
         sleep(0.1)
+            
 
