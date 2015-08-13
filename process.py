@@ -37,6 +37,7 @@ class Process(threading.Thread):
         # appears in.
         # ...
         self.state = State.runnable
+        self.event = None;
 
     def run(self):
         """Start the process running."""
@@ -63,8 +64,6 @@ class Process(threading.Thread):
         """Run as a background process."""
         loops = randint(10, 160)
         for i in range(loops):
-            while self.dispatcher.processList[-1] != self:
-                self#do nothing            
             self.main_process_body()
 
     def ask_user(self):
@@ -75,11 +74,18 @@ class Process(threading.Thread):
             _thread.exit()
         return int(input)
 
+    def setEvent(self, e):
+        self.event = e
+
+    def getEvent(self):
+        return self.event
+
     def main_process_body(self):
         # Something like the following but you will have to think about
         # pausing and resuming the process.
 
         # check to see if supposed to terminate
+        self.event.wait()
         if self.state == State.killed:
             _thread.exit()
         self.iosys.write(self, "*")

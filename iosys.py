@@ -83,6 +83,7 @@ class IO_Sys():
         panel = process.panel
         panel.move(*new_location) # move the process panel to the new location
         self.refresh_screen()
+        #print("moved process: " + str(process.id) + " to " + str(position))
 
     def write(self, process, data):
         """Writes 'data' to the window associated with 'process'."""

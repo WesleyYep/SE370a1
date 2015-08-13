@@ -24,13 +24,20 @@ class Dispatcher():
     def add_process(self, process):
         """Add and start the process."""
         # ...
+        if len(self.processList) > 1:
+            self.processList[-2].getEvent().clear();
         self.io_sys.allocate_window_to_process(process, len(self.processList))
         self.processList.append(process)
-        process.start()
+        self.dispatch_next_process()
 
     def dispatch_next_process(self):
         """Dispatch the process at the top of the stack."""
         # ...
+        process = self.processList[-1];
+        e = Event();
+        process.setEvent(e);
+        e.set();
+        process.start()
 
     def to_top(self, process):
         """Move the process to the top of the stack."""
@@ -57,9 +64,12 @@ class Dispatcher():
         Only called from running processes.
         """
         # ...
-        self.processList.pop()
+        self.processList.remove(process)
         self.io_sys.remove_window_from_process(process)
-        #self.dispatch_next_process();
+        #print("the length of the process list is " + str(len(self.processList)))
+        for i in range(len(self.processList)):
+        #    print("moving process " + str(self.processList[i].id)) 
+            self.io_sys.move_process(self.processList[i], i)
 
     def proc_waiting(self, process):
         """Receive notification that process is waiting for input."""
