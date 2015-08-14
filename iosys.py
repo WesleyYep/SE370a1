@@ -45,6 +45,7 @@ class IO_Sys():
         process - the new process
         tos     - the current index of the top of the stack
         """
+
         window = curses.newwin(WINDOW_HEIGHT, WINDOW_WIDTH)
         window.scrollok(True)
         panel = curses.panel.new_panel(window)
@@ -83,7 +84,6 @@ class IO_Sys():
         panel = process.panel
         panel.move(*new_location) # move the process panel to the new location
         self.refresh_screen()
-        #print("moved process: " + str(process.id) + " to " + str(position))
 
     def write(self, process, data):
         """Writes 'data' to the window associated with 'process'."""
@@ -94,15 +94,15 @@ class IO_Sys():
     def fill_buffer(self, process, data):
         """Fill the process buffer with data."""
         # ...
+        self.process_buffers[process] = data;
 
     def read(self, process):
         """Gets input from the window associated with 'process'."""
         # change the state of the process to waiting
         self.the_dispatcher.proc_waiting(process)
         # ...
-        window = process.panel.window()
-        number = int(window.getstr())
-        return number # return the data here
+        data = self.process_buffers[process];
+        return data # return the data here
 
 # =======================================================================================================================
 

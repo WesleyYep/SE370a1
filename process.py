@@ -57,6 +57,7 @@ class Process(threading.Thread):
         while loops > 0:
             for i in range(loops):
                 self.main_process_body()
+            self.event.clear();
             self.iosys.write(self, "\n")
             loops = self.ask_user()
 
@@ -69,6 +70,7 @@ class Process(threading.Thread):
     def ask_user(self):
         """Ask the user for number of loops."""
         self.iosys.write(self, "How many loops? ")
+        self.event.wait()
         input = self.iosys.read(self)
         if self.state == State.killed:
             _thread.exit()
@@ -83,9 +85,8 @@ class Process(threading.Thread):
     def main_process_body(self):
         # Something like the following but you will have to think about
         # pausing and resuming the process.
-
-        # check to see if supposed to terminate
         self.event.wait()
+        # check to see if supposed to terminate
         if self.state == State.killed:
             _thread.exit()
         self.iosys.write(self, "*")

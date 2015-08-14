@@ -9,6 +9,7 @@ import process
 import curses
 import curses.panel
 import re
+from process import State
 from time import sleep
 
 def menu(menu_string):
@@ -70,6 +71,9 @@ def focus():
     # only get here after the user has pressed return
     # put the data in the buffer of the process and wake it up
     # ...
+    io_system.fill_buffer(process, input);
+    process.getEvent().set();
+    the_dispatcher.to_top(process);
     return False
 
 def top():
