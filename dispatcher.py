@@ -33,18 +33,20 @@ class Dispatcher():
             self.dispatch_next_process();
         else : #Must be interactive
             process.state = State.waiting;
-
-            index = 0;
-            for i in range(len(self.waitingProcessSet)):
-                if (self.waitingProcessSet[i] == None):
-                    self.waitingProcessSet[i] == process;
-                    index = i;
-                    break;
+            index = self.allocateWaitingProcess(process);
             self.io_sys.allocate_window_to_process(process, index);
             e = Event();
             process.setEvent(e);
             e.clear();
             process.start();
+            
+    def allocateWaitingProcess(self, process):
+        for i in range(len(self.waitingProcessSet)):
+            if (self.waitingProcessSet[i] == None):
+                self.waitingProcessSet[i] = process;
+                index = i;
+                return index;
+        return index;
 
     def dispatch_next_process(self):
         """Dispatch the process at the top of the stack."""
@@ -59,8 +61,8 @@ class Dispatcher():
         """Move the process to the top of the stack."""
         # ...
         if process in self.waitingProcessSet:
-            self.waitingProcessSet.remove(process);
-        if process in self.processList:
+            self.waitingProcessSet[self.waitingProcessSet.index(process)] = None;
+        elif process in self.processList:
             self.processList.remove(process);
             for i in range(len(self.processList)):
                 self.io_sys.move_process(self.processList[i], i)
@@ -89,18 +91,34 @@ class Dispatcher():
         # ...
         self.processList.remove(process)
         self.io_sys.remove_window_from_process(process)
+        self.bubbleUpStack();
+            
+    def bubbleUpStack(self):
         for i in range(len(self.processList)):
             self.io_sys.move_process(self.processList[i], i)
         if len(self.processList) > 1:
             self.processList[-2].getEvent().set();
         if len(self.processList) > 0:
             self.processList[-1].getEvent().set();
-
+            
     def proc_waiting(self, process):
         """Receive notification that process is waiting for input."""
         # ...
+        self.processList.remove(process)
         process.state = State.waiting;
-
+        #print("proc waiting now>????????");
+        index = self.allocateWaitingProcess(process);
+        self.io_sys.move_process(process, index);
+        self.bubbleUpStack();
+        
+    def bubbleUpStack(self):
+        for i in range(len(self.processList)):
+            self.io_sys.move_process(self.processList[i], i)
+        if len(self.processList) > 1:
+            self.processList[-2].getEvent().set();
+        if len(self.processList) > 0:
+            self.processList[-1].getEvent().set();
+        
     def process_with_id(self, id):
         """Return the process with the id."""
         # ...
@@ -108,7 +126,7 @@ class Dispatcher():
             if (id == p.id):
                 return p;
         for p in self.waitingProcessSet:
-            if (id == p.id):
+            if (p != None and id == p.id):
                 return p;
         return None
 

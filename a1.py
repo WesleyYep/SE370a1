@@ -73,6 +73,7 @@ def focus():
     # ...
     io_system.fill_buffer(process, input);
     process.getEvent().set();
+    process.state = State.runnable;
     the_dispatcher.to_top(process);
     return False
 

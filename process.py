@@ -59,6 +59,7 @@ class Process(threading.Thread):
                 self.main_process_body()
             self.event.clear();
             self.iosys.write(self, "\n")
+            self.dispatcher.proc_waiting(self);
             loops = self.ask_user()
 
     def run_background(self):
