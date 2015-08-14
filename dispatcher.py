@@ -26,8 +26,8 @@ class Dispatcher():
         """Add and start the process."""
         # ...
         if process.type == Type.background:
-            if len(self.processList) > 1:
-                self.processList[-2].getEvent().clear();
+            for p in self.processList[:-1]:
+                p.getEvent().clear();
             self.io_sys.allocate_window_to_process(process, len(self.processList));
             self.processList.append(process);
             self.dispatch_next_process();
@@ -68,6 +68,8 @@ class Dispatcher():
                 self.io_sys.move_process(self.processList[i], i)
         self.io_sys.move_process(process, len(self.processList));
         self.processList.append(process);
+        for p in self.processList[:-2]:
+            p.getEvent().clear();
 
     def pause_system(self):
         """Pause the currently running process.
