@@ -1,0 +1,20 @@
+#answers to a1 questions
+# Wesley Yep    wyep266     5870267
+# for SE 370
+
+1) (may need to maximise to see fully)
+_______________________________________________________________________
+|   |   |   |           |                    |        |                |
+|p1 |p2 |p3 |   p4      |    p3              | p2     |    p1          |
+|___|___|___|___________|____________________|________|________________|
+0   1   2   3           8                   16        19               26
+
+average waiting time = ((19-1) + (16-2) + (8-3))/4 = 37/4 = 9.25 ms
+
+2)
+A real operating system would not need to do this because as soon as a real system wants to kill a process, it will just deallocate the resources of the process and it will be unable to continue to carry out it's work. In the python thread implementation, we require the process to check it's state because there is no direct kill method which can be called on a subclass of threading.Thread.
+Alternatively, this state checking could be removed if we add a method in the process class called kill(), which would call _thread.exit() from inside the thread, which would simulate the process being killed. Then, instead of changing the state to killed, we could call the process.kill() method.
+
+3)
+No, this will not scale well. For 2 processes running at the same time, using a shared stack is generally fine since there is a low chance that the dispatcher would need to perform stack operations from both of the processes at the same time (eg. if a process is moved to top, killed, or added to the stack).
+If there were many more processors, then it would be a much higher chance of 2 or more processes requiring dispatcher action on the stack at the same time. Since there is only one dispatcher and one stack, the dispatcher must make sure that the integrity of the stack is maintained, by not allowing any operations on the stack until the previous operation is finished. This will cause delay and there will be a higher probability of crashing.
