@@ -79,11 +79,15 @@ class Dispatcher():
         effectively pauses the system.
         """
         # ...
+        for p in self.processList[:]:
+            p.getEvent().clear();
 
     def resume_system(self):
         """Resume running the system."""
         # ...
-
+        for p in self.processList[-2:]:
+            p.getEvent().set();
+            
     def wait_until_finished(self):
         """Hang around until all runnable processes are finished."""
         # ...
