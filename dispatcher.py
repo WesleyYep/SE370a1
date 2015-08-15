@@ -17,6 +17,7 @@ class Dispatcher():
         # ...
         self.processList = [];
         self.waitingProcessSet = [None, None, None, None, None, None];
+        self.lock = Lock();
 
     def set_io_sys(self, io_sys):
         """Set the io subsystem."""
@@ -60,6 +61,9 @@ class Dispatcher():
     def to_top(self, process):
         """Move the process to the top of the stack."""
         # ...
+        self.lock.acquire();
+        if (process is None):
+            return;
         if process in self.waitingProcessSet:
             self.waitingProcessSet[self.waitingProcessSet.index(process)] = None;
         elif process in self.processList:
@@ -72,6 +76,7 @@ class Dispatcher():
             p.getEvent().clear();
         for p in self.processList[-2:]:
             p.getEvent().set();
+        self.lock.release();
 
     def pause_system(self):
         """Pause the currently running process.
@@ -99,9 +104,11 @@ class Dispatcher():
         Only called from running processes.
         """
         # ...
+        self.lock.acquire();
         self.processList.remove(process)
         self.io_sys.remove_window_from_process(process)
         self.bubbleUpStack();
+        self.lock.release();
         
     def killWaitingProcess(self, process):
         """kills a waiting process"""
@@ -115,24 +122,18 @@ class Dispatcher():
             self.processList[-2].getEvent().set();
         if len(self.processList) > 0:
             self.processList[-1].getEvent().set();
+
             
     def proc_waiting(self, process):
         """Receive notification that process is waiting for input."""
         # ...
+        self.lock.acquire();
         self.processList.remove(process)
         process.state = State.waiting;
-        #print("proc waiting now>????????");
         index = self.allocateWaitingProcess(process);
         self.io_sys.move_process(process, index);
         self.bubbleUpStack();
-        
-    def bubbleUpStack(self):
-        for i in range(len(self.processList)):
-            self.io_sys.move_process(self.processList[i], i)
-        if len(self.processList) > 1:
-            self.processList[-2].getEvent().set();
-        if len(self.processList) > 0:
-            self.processList[-1].getEvent().set();
+        self.lock.release();
         
     def process_with_id(self, id):
         """Return the process with the id."""
