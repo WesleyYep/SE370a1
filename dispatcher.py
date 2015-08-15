@@ -70,6 +70,8 @@ class Dispatcher():
         self.processList.append(process);
         for p in self.processList[:-2]:
             p.getEvent().clear();
+        for p in self.processList[-2:]:
+            p.getEvent().set();
 
     def pause_system(self):
         """Pause the currently running process.
