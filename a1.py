@@ -10,6 +10,7 @@ import curses
 import curses.panel
 import re
 from process import State
+from process import Type
 from time import sleep
 
 def menu(menu_string):
@@ -88,6 +89,11 @@ def kill():
     """Kill the process at the top of the stack."""
     process = get_process_from_user("Enter the number of the process to kill:")
     # ...
+    if (process.type == Type.interactive and process.state == State.waiting):
+        the_dispatcher.killWaitingProcess(process);        
+    else: #must be a background process or running interactive process
+        the_dispatcher.proc_finished(process);
+    process.state = State.killed;
     return False
 
 def halt():
@@ -130,7 +136,7 @@ def cancel():
     return True
 
 def quit():
-    # the_dispatcher.shut_down()
+    #the_dispatcher.shut_down()
     return True
 
 def main(stdscr):

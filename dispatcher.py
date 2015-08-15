@@ -91,6 +91,8 @@ class Dispatcher():
     def wait_until_finished(self):
         """Hang around until all runnable processes are finished."""
         # ...
+        while (len(self.processList) != 0):
+            nothing = 0; #busy wait
 
     def proc_finished(self, process):
         """Receive notification that "proc" has finished.
@@ -100,6 +102,11 @@ class Dispatcher():
         self.processList.remove(process)
         self.io_sys.remove_window_from_process(process)
         self.bubbleUpStack();
+        
+    def killWaitingProcess(self, process):
+        """kills a waiting process"""
+        self.waitingProcessSet[self.waitingProcessSet.index(process)] = None;
+        self.io_sys.remove_window_from_process(process)
             
     def bubbleUpStack(self):
         for i in range(len(self.processList)):
